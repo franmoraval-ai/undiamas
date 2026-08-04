@@ -60,6 +60,8 @@ npm run build
 
 Las pruebas actuales cubren validaciones con Zod, helpers de seguridad y los handlers públicos de creación de voces, reportes y `yo también`.
 
+`Yo también` sigue funcionando aunque el backend de rate limiting falle temporalmente; en ese caso prioriza la reacción y registra el fallo en logs para no bloquear la experiencia.
+
 ## CI
 
 El workflow [ci.yml](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/.github/workflows/ci.yml) ejecuta `npm run lint`, `npm test` y `npm run build` en cada `push` y `pull_request`.
