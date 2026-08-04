@@ -10,6 +10,7 @@ export type Voz = {
 };
 
 const voiceColumns = "id, texto, categoria, fecha, yo_tambien, created_at";
+const voiceSitemapColumns = "id, created_at";
 
 export async function getApprovedVoces() {
   const supabase = createSupabasePublicClient();
@@ -47,4 +48,22 @@ export async function getApprovedVoz(id: string) {
   }
 
   return data as Voz | null;
+}
+
+export async function getApprovedVoiceEntries() {
+  const supabase = createSupabasePublicClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("voces")
+    .select(voiceSitemapColumns)
+    .eq("estado", "aprobada")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Unable to load approved voices for sitemap", error);
+    return [];
+  }
+
+  return (data ?? []) as Array<Pick<Voz, "id" | "created_at">>;
 }

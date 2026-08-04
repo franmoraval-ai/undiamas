@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   if (!supabase) return NextResponse.json({ error: "El servicio no está configurado." }, { status: 503 });
 
   const ipHash = getRequestIpHash(request);
-  if (!ipHash) return NextResponse.json({ error: "No pudimos verificar esta solicitud." }, { status: 503 });
+  if (!ipHash) return NextResponse.json({ error: "No pudimos identificar esta solicitud." }, { status: 503 });
 
   let body: unknown;
   try {
@@ -27,8 +27,9 @@ export async function POST(request: Request) {
   try {
     const allowed = await consumeRateLimit(supabase, `voice:${ipHash}`, rateLimits.voice);
     if (!allowed) return NextResponse.json({ error: "Has compartido varias voces. Vuelve a intentarlo más tarde." }, { status: 429, headers: { "Retry-After": "900" } });
-  } catch {
-    return NextResponse.json({ error: "No pudimos verificar esta solicitud." }, { status: 503 });
+  } catch (error) {
+    console.error("Unable to consume voice rate limit", error);
+    return NextResponse.json({ error: "Esta accion no esta disponible en este momento." }, { status: 503 });
   }
 
   const { error } = await supabase.from("voces").insert({
