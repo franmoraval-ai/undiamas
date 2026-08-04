@@ -17,12 +17,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const ipHash = getRequestIpHash(request);
   if (!ipHash) return NextResponse.json({ error: "No pudimos identificar esta solicitud." }, { status: 503 });
 
+  let allowed = true;
   try {
-    const allowed = await consumeRateLimit(supabase, `reaction:${ipHash}`, rateLimits.reaction);
-    if (!allowed) return NextResponse.json({ error: "Vuelve a intentarlo más tarde." }, { status: 429, headers: { "Retry-After": "300" } });
+    allowed = await consumeRateLimit(supabase, `reaction:${ipHash}`, rateLimits.reaction);
   } catch (error) {
     console.error("Unable to consume reaction rate limit", error);
-    return NextResponse.json({ error: "Esta accion no esta disponible en este momento." }, { status: 503 });
+  }
+
+  if (!allowed) {
+    return NextResponse.json({ error: "Vuelve a intentarlo más tarde." }, { status: 429, headers: { "Retry-After": "300" } });
   }
 
   const { data, error } = await supabase.rpc("registrar_yo_tambien", { voz_uuid: id, actor_hash: ipHash });

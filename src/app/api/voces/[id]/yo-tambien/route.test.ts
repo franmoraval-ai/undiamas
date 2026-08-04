@@ -137,9 +137,19 @@ describe("POST /api/voces/[id]/yo-tambien", () => {
     await expect(response.json()).resolves.toEqual({ count: 2 });
   });
 
-  it("returns a clear 503 when the rate-limit backend is unavailable", async () => {
+  it("still registers a reaction when the rate-limit backend is unavailable", async () => {
     createSupabaseAdminClient.mockReturnValue({
-      rpc: vi.fn().mockResolvedValue({ data: null, error: { message: "missing function" } }),
+      rpc: vi.fn((fnName: string) => {
+        if (fnName === "consume_rate_limit") {
+          return Promise.resolve({ data: null, error: { message: "missing function" } });
+        }
+
+        if (fnName === "registrar_yo_tambien") {
+          return Promise.resolve({ data: 5, error: null });
+        }
+
+        return Promise.resolve({ data: null, error: null });
+      }),
     });
 
     const response = await POST(
@@ -154,9 +164,7 @@ describe("POST /api/voces/[id]/yo-tambien", () => {
       { params: Promise.resolve({ id: "3fa85f64-5717-4562-b3fc-2c963f66afa6" }) },
     );
 
-    expect(response.status).toBe(503);
-    await expect(response.json()).resolves.toEqual({
-      error: "Esta accion no esta disponible en este momento.",
-    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ count: 5 });
   });
 });
