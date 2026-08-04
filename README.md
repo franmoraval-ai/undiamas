@@ -40,7 +40,7 @@ La aplicación estará disponible en `http://localhost:3000`.
 ## Configurar Supabase
 
 1. Crea un proyecto de Supabase.
-2. Ejecuta `supabase/migrations/20260803000000_initial_schema.sql` en el SQL Editor o mediante la CLI de Supabase.
+2. Ejecuta todas las migraciones de [supabase/migrations/](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations) en orden, incluyendo [20260803000000_initial_schema.sql](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations/20260803000000_initial_schema.sql) y [20260804000000_hardening.sql](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations/20260804000000_hardening.sql), desde el SQL Editor o mediante la CLI de Supabase.
 3. Copia `.env.example` a `.env.local` y completa las variables.
 4. Revisa las nuevas filas en `voces` y cambia `estado` a `aprobada` cuando corresponda. El trigger de base de datos registra cada cambio de estado en `moderacion`.
 
@@ -57,3 +57,13 @@ npm run lint
 npm test
 npm run build
 ```
+
+Las pruebas actuales cubren validaciones con Zod, helpers de seguridad y los handlers públicos de creación de voces, reportes y `yo también`.
+
+## CI
+
+El workflow [ci.yml](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/.github/workflows/ci.yml) ejecuta `npm run lint`, `npm test` y `npm run build` en cada `push` y `pull_request`.
+
+## SEO técnico
+
+La URL pública canónica se define desde [layout.tsx](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/src/app/layout.tsx) con base en [site.ts](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/src/lib/site.ts). Además, [robots.ts](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/src/app/robots.ts) publica la política de rastreo y [sitemap.ts](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/src/app/sitemap.ts) expone las rutas estáticas y cada voz aprobada.

@@ -22,7 +22,10 @@ export function isSameOrigin(request: Request) {
 
 export function getRequestIpHash(request: Request) {
   const salt = process.env.IP_HASH_SALT;
-  const ip = request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const ip =
+    request.headers.get("x-vercel-forwarded-for")
+    ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? request.headers.get("x-real-ip");
 
   if (!salt || !ip) return null;
   return createHash("sha256").update(`${ip}:${salt}`).digest("hex");

@@ -15,17 +15,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!voiceIdSchema.safeParse(id).success) return NextResponse.json({ error: "Voz inválida." }, { status: 400 });
 
   const ipHash = getRequestIpHash(request);
-  if (!ipHash) return NextResponse.json({ error: "No pudimos verificar esta solicitud." }, { status: 503 });
+  if (!ipHash) return NextResponse.json({ error: "No pudimos identificar esta solicitud." }, { status: 503 });
 
   try {
     const allowed = await consumeRateLimit(supabase, `reaction:${ipHash}`, rateLimits.reaction);
     if (!allowed) return NextResponse.json({ error: "Vuelve a intentarlo más tarde." }, { status: 429, headers: { "Retry-After": "300" } });
-  } catch {
-    return NextResponse.json({ error: "No pudimos verificar esta solicitud." }, { status: 503 });
+  } catch (error) {
+    console.error("Unable to consume reaction rate limit", error);
+    return NextResponse.json({ error: "Esta accion no esta disponible en este momento." }, { status: 503 });
   }
 
   const { data, error } = await supabase.rpc("registrar_yo_tambien", { voz_uuid: id, actor_hash: ipHash });
-  if (error || typeof data !== "number") return NextResponse.json({ error: "No fue posible actualizar esta voz." }, { status: 400 });
+  if (error || typeof data !== "number") {
+    console.error("Unable to register accompaniment reaction", error);
+    return NextResponse.json({ error: "No fue posible registrar este acompanamiento." }, { status: 503 });
+  }
 
   return NextResponse.json({ count: data });
 }
