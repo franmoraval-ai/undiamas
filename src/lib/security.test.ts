@@ -79,9 +79,9 @@ describe("security helpers", () => {
     ).resolves.toBe(true);
 
     expect(rpc).toHaveBeenCalledWith("consume_rate_limit", {
-      limit_key: "voice:test",
-      max_requests: 3,
-      window_seconds: 900,
+      p_limit_key: "voice:test",
+      p_max_requests: 3,
+      p_window_seconds: 900,
     });
   });
 

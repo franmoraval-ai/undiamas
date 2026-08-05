@@ -28,6 +28,12 @@ supabase         Migraciones, RLS, límites y auditoría de moderación
 
 `voces` contiene el texto, estado de moderación y contador agregado. `reportes` recibe alertas de contenido. `moderacion` registra cada transición de estado. `reacciones_voz` impone una reacción única sin almacenar IP en claro. `request_rate_limits` aplica límites temporales a mutaciones públicas.
 
+## Moderación privada
+
+`/moderacion` utiliza un magic link de Supabase. Define `MODERATOR_EMAIL` en `.env.local` y en las variables de Vercel con el correo que recibirá el enlace. Cuando ese correo inicia sesión por primera vez, el callback lo registra en `moderadores`; solo ese usuario puede acceder a la cola o ejecutar una decisión. Aplica la migración de moderadores antes de activar este flujo.
+
+**Importante:** en el panel de Supabase, ve a *Authentication > URL Configuration* y agrega la URL de producción (por ejemplo `https://www.undiamas.net/auth/callback` o `https://www.undiamas.net/**`) a la lista de *Redirect URLs*, además de actualizar el *Site URL*. Si el dominio de producción no está en esa lista, Supabase ignora el `redirectTo` enviado por la app y redirige el magic link a la URL local (`http://localhost:3000`), lo que impide iniciar sesión como moderador en producción y, por lo tanto, aprobar o rechazar voces.
+
 ## Desarrollo
 
 ```bash
@@ -40,7 +46,7 @@ La aplicación estará disponible en `http://localhost:3000`.
 ## Configurar Supabase
 
 1. Crea un proyecto de Supabase.
-2. Ejecuta todas las migraciones de [supabase/migrations/](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations) en orden, incluyendo [20260803000000_initial_schema.sql](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations/20260803000000_initial_schema.sql) y [20260804000000_hardening.sql](C:/Users/marco/OneDrive/Desktop/un-dia-mas.worktrees/security-policy-improvements-ci-cd-setup/supabase/migrations/20260804000000_hardening.sql), desde el SQL Editor o mediante la CLI de Supabase.
+2. Ejecuta todos los archivos de `supabase/migrations` en orden ascendente de nombre, desde el SQL Editor o mediante la CLI de Supabase.
 3. Copia `.env.example` a `.env.local` y completa las variables.
 4. Revisa las nuevas filas en `voces` y cambia `estado` a `aprobada` cuando corresponda. El trigger de base de datos registra cada cambio de estado en `moderacion`.
 

@@ -37,9 +37,9 @@ export async function consumeRateLimit(
   { maxRequests, windowSeconds }: RateLimit,
 ) {
   const { data, error } = await supabase.rpc("consume_rate_limit", {
-    limit_key: key,
-    max_requests: maxRequests,
-    window_seconds: windowSeconds,
+    p_limit_key: key,
+    p_max_requests: maxRequests,
+    p_window_seconds: windowSeconds,
   });
 
   if (error) throw new Error("Unable to consume rate limit.");

@@ -55,9 +55,9 @@ describe("POST /api/voces", () => {
 
     expect(response.status).toBe(201);
     expect(rpc).toHaveBeenCalledWith("consume_rate_limit", {
-      limit_key: expect.stringMatching(/^voice:/),
-      max_requests: 3,
-      window_seconds: 900,
+      p_limit_key: expect.stringMatching(/^voice:/),
+      p_max_requests: 3,
+      p_window_seconds: 900,
     });
     expect(from).toHaveBeenCalledWith("voces");
     expect(insert).toHaveBeenCalledWith({

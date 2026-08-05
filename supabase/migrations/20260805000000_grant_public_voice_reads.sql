@@ -1,0 +1,1 @@
+grant select on public.voces to anon, authenticated;
